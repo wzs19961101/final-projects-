@@ -1,13 +1,11 @@
 - title of your project
 
-Association Rules of Research on What people purchase
+Reproducible Research for Association Rules
 
 
 - main idea (a few paragraphs)
 
-The main goal of this analysis was to perform most common algorithm used to observe what people purchase.
-This dataset gives us information about the things people purchase when they go to a shop.
-By using some method, we could analyse what Item combination people will buy.
+From this project,we could see that Association Rules are an extremely interesting method of data analysis which can relatively easily find out about many interesting relationships. And also, I did Reproducible Research by using same methods for another datasets, which prove the reproducibility of my code.
 
 - description of the dataset
 
@@ -17,13 +15,16 @@ This dataset gives us information about the things people purchase when they go 
 By looking at the patterns what they buy, 
 we can get an understanding to reorder the things in the shop in a better way to help people feel more convenient in finding what they want in an easier way!
 
+Then we do reproducibility of my methods on different datasets: https://www.kaggle.com/roshansharma/market-basket-optimization/version/1
+
 - app/analysis/report structure
 
 Load the data
 do some Analysis
 Get visualization and plots
 Find the relationship between different object by using Association rules
-
+Do reproducibility
+Conclusion
 
 - research methods (if applicable)
 
