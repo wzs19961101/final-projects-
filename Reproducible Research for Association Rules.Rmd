@@ -1,0 +1,278 @@
+---
+title: "Reproducible Research for Association Rules"
+author: "Zhaoshuai Wang"
+date: "2021/5/26"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE)
+```
+
+
+
+# **Introduction**
+
+This paper deals with the analysis called association rules.
+A common example is customer purchase analysis, which is an attempt to guess whether the consumer will buy the product/products Y if he buys product/products X. product/products X.
+
+The Previous research data is taken from kaggle platform.  https://www.kaggle.com/gorkhachatryan01/purchase-behaviour
+
+The original paper is from my ML project, I would like to improve it by Reproducible Research.
+
+Do reproducibility of association rules on different datasets:
+https://www.kaggle.com/roshansharma/market-basket-optimization/version/1
+
+
+
+
+```{r cars 10}
+library(kableExtra)
+library(arules)
+library(arulesViz)
+transactions = read.transactions(
+  "Market_Basket_Optimisation.csv",
+  format = "basket",
+  sep = ",",
+  skip = 0,
+  header = TRUE
+)
+transactions
+itemFrequencyPlot(
+  transactions,
+  topN = 20,
+  type = "absolute",
+  main = "Item frequency",
+  cex.names = 0.85
+)
+
+
+```
+
+The figure above shows the twenty most popular purchases. Mineral water comes first, followed by eggs, spaghetti, french fires and chocolate.
+
+# Association rules
+# Global rules calculations
+
+We should start the analysis by creating rules, to do this I will use the Apriori algorithm. Because the algorithm did not find enough rules for the base values of confidence and support, I decided to lower their values to 0.01 (support) and 0.4 (confidence). After calculations, the algorithm found 17 rules.
+
+```{r cars 11}
+rules = apriori(transactions, parameter = list(supp = 0.01, conf = 0.40))
+
+```
+
+Association rules analysis is a technique to uncover how items are associated to each other. 
+
+There are three common ways to measure association: ***Support/Confidence/Lift***.
+
+There are some examples in my git: https://github.com/wzs19961101/final-projects-.git
+
+# Support
+
+Support is a measure of how often a certain subset of products appeared in the whole set of transactions. In other words this is the probability of appearing a transaction with all items together. Below are top six rules in terms of support value.
+
+```{r cars 12}
+rules_supp = sort(rules, by = "support", decreasing = TRUE)
+rules_supp_table = inspect(head(rules_supp), linebreak = FALSE)
+rules_supp_table %>%
+  kable() %>%
+  kable_styling()
+```
+
+Considering the result with the highest support value (around 4%), which means that 307 transactions out of a total of 7,500 contained ground beef and mineral water. The second means that oliver oil and mineral water transaction was present in 2.7% of transactions. And third soup and mineral water appeared in 2.3% of transactions.
+
+# Confidence
+
+Confidence is a measure of how likely it is that the consumer buys product Y (rhs) if he has product/products X (lhs) in his basket. In more formal way it is the estimated conditional probability of seeing Y product/s in a transaction under the condition that the transaction also contains X product/s.
+
+```{r cars 13}
+rules_conf = sort(rules, by = "confidence", decreasing = TRUE)
+rules_conf_table = inspect(head(rules_conf), linebreak = FALSE)
+rules_conf_table %>%
+  kable() %>%
+  kable_styling()
+```
+
+Confidence values in the six presented are quite similar (from 45% to 50%). Let’s only analyze the basket with the highest confidence. 
+
+The value of confidence says that when buying ***eggs and ground beef with a probability rate of 51%, the consumer will also buy mineral water***.
+
+# Lift
+
+Lift is understood as a measure of sorts correlation. Put simply, it says about how likely it is that products X and Y will be bought together or separately.
+
+A value greater than 1 says that products should be bought together, a value less than one says that they should be bought separately.
+
+```{r cars 14}
+rules_lift = sort(rules, by = "lift", decreasing = TRUE)
+rules_lift_table = inspect(head(rules_lift), linebreak = FALSE)
+rules_lift_table %>%
+  kable() %>%
+  kable_styling()
+
+```
+
+Analyzing the values of the top six transactions, we can see that for all of them Lift values are higher than one. So we can conclude that rhs products are more likely to be bought with other products (lhs list) than if they were independent.
+For {ground beef, mineral water} => {spaghetti} rule, items have been seen together in transactions at the 2.39 rate expected under independence between them.
+
+```{r cars 15}
+plot(rules, engine="plotly")
+```
+
+Let’s also look at the graph showing the location of the transaction data relative to support (horizontal axis), confidence (vertical axis) and lift (color saturation). Most of the values are arranged in a hyperbolic shape, suggesting that as confidence increases, support decreases. This is mainly due to similarities in the way they are calculated, but thanks to this, some outliers are clearer to see. (such as {soup}=>{mineral water})
+
+# Chocolate rules calculation
+
+ ***Let’s say we just want to look at chocolate as our rhs***, in simple terms ***we want to find out what products usually are bought before or together with chocolate***. With which products does the consumer like to buy chocolate the most.
+
+```{r cars 16}
+rules_chocolate = apriori(
+    data = transactions,
+    parameter = list(supp = 0.001, conf = 0.7),
+    appearance = list(default = "lhs", rhs = "chocolate"),
+    control = list(verbose = F)
+  )
+rules_chocolate_table = inspect(rules_chocolate, linebreak = FALSE)
+
+rules_chocolate_table %>%
+  kable() %>%
+  kable_styling()
+
+plot(rules_chocolate, engine="plotly")
+```
+
+# Conclusions
+From this project,we could see that Association Rules are an extremely interesting method of data analysis which can relatively easily find out about many interesting relationships. 
+And also, I did Reproducible Research by using same methods for another datasets, which prove the reproducibility of my code. 
+
+
+
+
+
+
+
+
+# *Original research paper is showing below*:
+
+
+```{r cars 0}
+library(arules)
+library(arulesViz)
+setwd("C:/Users/wangz/Desktop")
+md = read.transactions("dataset.csv",format = "basket",
+                                sep = ",",skip = 0, header = TRUE)
+dim(md)
+
+#average number of items 
+ave_size = mean(size(md));
+ave_size 
+summary(md)
+```
+
+Check what products appear most/least often, and get visualization and plots 
+
+```{r cars 1}
+# relative frequency
+round(itemFrequency(md, type="relative"),4)
+# plot for relative frequency
+itemFrequencyPlot(
+  md,
+  topN = 10,
+  type = "relative",
+  main = "Item frequency",
+  cex.names = 0.85
+)
+
+#absolute frequency
+itemFrequency(md, type="absolute")
+#plot for absolute frequency
+itemFrequencyPlot(
+  md,
+  topN = 10,
+  type = "absolute",
+  main = "Item frequency",
+  cex.names = 0.85
+)
+```
+
+The figure above shows the 10 most popular purchases. Vegetables is first, then poultry and waffles.
+
+```{r cars 2}
+#Plot for min support
+itemFrequencyPlot(md, support = 0.1) #minimum support at 10%
+```
+
+Association rules
+
+Association rules analysis is a technique to uncover how items are associated to each other. There are three common ways to measure association: Support/Confidence/Lift
+
+Global rules calculations
+
+I use the Apriori algorithm. To simplify the analysis, I used the values:
+Confidence = 0.4,  support = 0.1
+After calculations, the algorithm found 38 rules.
+
+```{r cars 3}
+rules = apriori(md, parameter = list(supp = 0.1, conf = 0.4))
+```
+
+Support
+
+Support is a measure of how often a certain subset of items appeared in the whole data. 
+
+```{r cars 4}
+rules_supp = sort(rules, by = "support", decreasing = TRUE)
+rules_supp_table = inspect(head(rules_supp), linebreak = FALSE)
+```
+
+Confidence
+
+Confidence is a measure of how likely it is that the consumer buys product Y (rhs) if he has product/products X (lhs) in his basket. In more formal way it is the estimated conditional probability of seeing Y product/s in a transaction under the condition that the transaction also contains X product/s.
+
+```{r cars 5}
+rules_conf = sort(rules, by = "confidence", decreasing = TRUE)
+rules_conf_table = inspect(head(rules_conf), linebreak = FALSE)
+```
+
+Lift
+
+Lift is understood as a measure of sorts correlation. Put simply, it says about how likely it is that products X and Y will be bought together or separately. 
+A value greater than one says that products should be bought together, a value less than one says that they should be bought separately.
+
+```{r cars 6}
+rules_lift = sort(rules, by = "lift", decreasing = TRUE)
+rules_lift_table = inspect(head(rules_lift), linebreak = FALSE)
+```
+
+we can see the result,  for all of them, Lift values are higher than 1. So we can say that rhs products are more likely to be bought with other products (lhs list) than if they were independent. 
+
+```{r cars 7}
+plot(rules, engine="plotly")
+```
+
+Change rhs to another product--Ice cream rules calculation
+
+In our data, vegetables is the most frequent product in the basket analysis, we cannot observe any rules. So let's use another product as our rhs: I will take Ice cream
+
+```{r cars 8}
+rules_ice_cream = apriori(
+    data = md,
+    parameter = list(supp = 0.01, conf = 0.4),
+    appearance = list(default = "lhs", rhs = "ice cream"),
+    control = list(verbose = F)
+  )
+rules_ice_cream_table = inspect(rules_ice_cream, linebreak = FALSE)
+```
+
+Due to fewer transactions of this type, I reduce the initial support value to 0.01.
+
+Due to the small sample, there is no clear pattern between the results of the analysis
+
+```{r cars 9}
+plot(rules_ice_cream, engine="plotly")
+plot(rules_ice_cream, method="graph") 
+```
+
+
+In this paper, I used mainly Apriori method for association rules. Despite results is not very good, I think that Association Rules are an interesting method of data analysis. 
+
