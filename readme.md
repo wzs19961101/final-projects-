@@ -9,17 +9,15 @@ Reproducible Research for Association Rules
 
 - main idea (a few paragraphs)
 
-From this project,we could see that Association Rules are an extremely interesting method of data analysis which can relatively easily find out about many interesting relationships. And also, I did Reproducible Research by using same methods for another datasets, which prove the reproducibility of my code.
+This paper deals with the analysis called association rules.
+A common example is customer purchase analysis, which is an attempt to guess whether the consumer will buy the product/products Y if he buys product/products X. product/products X.
 
-- description of the dataset
+The Previous research data is taken from kaggle platform.  https://www.kaggle.com/gorkhachatryan01/purchase-behaviour
 
-https://www.kaggle.com/gorkhachatryan01/purchase-behaviour
+The original paper is from my ML project, I would like to improve it by Reproducible Research.
 
-This dataset gives us information about the things people purchase when they go to a shop. The raws are the people who buy specific things when they go to a shop. 
-By looking at the patterns what they buy, 
-we can get an understanding to reorder the things in the shop in a better way to help people feel more convenient in finding what they want in an easier way!
-
-Then we do reproducibility of my methods on different datasets: https://www.kaggle.com/roshansharma/market-basket-optimization/version/1
+Do reproducibility of association rules on different datasets:
+https://www.kaggle.com/roshansharma/market-basket-optimization/version/1
 
 - app/analysis/report structure
 
